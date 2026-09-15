@@ -4,7 +4,7 @@
   "description": "إدارة رأس المال والمخزون والعملاء والمبيعات",
   "lang": "ar",
   "dir": "rtl",
-  "start_url": "./واجهة_جرد_المخازن.html",
+  "start_url": "./App.html",
   "scope": "./",
   "orientation": "any",
   "display": "standalone",

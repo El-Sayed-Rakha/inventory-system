@@ -1,6 +1,6 @@
-const CACHE_NAME = 'inventory-app-v6';
+const CACHE_NAME = 'inventory-app-v7';
 const APP_FILES = [
-  './واجهة_جرد_المخازن.html',
+  './App.html',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg',
@@ -24,5 +24,5 @@ self.addEventListener('fetch', event => {
       caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
     }
     return response;
-  }).catch(() => event.request.mode === 'navigate' ? caches.match('./واجهة_جرد_المخازن.html') : Response.error())));
+  }).catch(() => event.request.mode === 'navigate' ? caches.match('./App.html') : Response.error()));
 });

@@ -17,7 +17,7 @@
     body { margin:0; background:var(--paper); color:var(--ink); font-family:"Segoe UI",Tahoma,Arial,sans-serif; }
     button, input, select { font:inherit; }
     button { cursor:pointer; }
-    .app { min-height:100vh; display:grid; grid-template-columns:260px 1fr; }
+    .app { min-height:100vh; display:grid; grid-template-columns:260px minmax(0,1fr); }
     aside { background:var(--ink); color:#fff; padding:28px 18px; display:flex; flex-direction:column; gap:30px; }
     .brand { display:flex; align-items:center; gap:12px; padding:0 8px; }
     .brand-mark { width:42px; height:42px; display:grid; place-items:center; background:var(--coral); color:#fff; font-size:25px; border-radius:12px; }
@@ -28,11 +28,11 @@
     .nav-btn:hover, .nav-btn.active { color:#fff; background:#274052; }
     .nav-icon { width:24px; text-align:center; font-size:20px; }
     .side-note { margin-top:auto; border-top:1px solid #395061; padding:18px 8px 0; color:#aebdcc; font-size:12px; line-height:1.7; }
-    main { padding:34px clamp(18px,4vw,54px); max-width:1500px; width:100%; }
+    main { padding:34px clamp(18px,4vw,54px); max-width:1500px; width:100%; min-width:0; overflow:hidden; }
     .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:28px; }
     .eyebrow { color:var(--teal); font-size:13px; font-weight:700; letter-spacing:.3px; margin:0 0 8px; }
     h2 { font-size:30px; margin:0; letter-spacing:0; }
-    .top-actions { display:flex; gap:9px; flex-wrap:wrap; }
+    .top-actions { display:flex; gap:9px; flex-wrap:wrap; min-width:0; }
     .button { border:1px solid var(--line); background:#fff; color:var(--ink); padding:10px 15px; border-radius:9px; display:inline-flex; align-items:center; gap:8px; font-weight:600; }
     .button:hover { border-color:var(--teal); color:var(--teal-dark); }
     .button.primary { border-color:var(--teal); background:var(--teal); color:#fff; }
@@ -55,7 +55,7 @@
     input, select { width:100%; border:1px solid var(--line); background:#fbfcfd; color:var(--ink); border-radius:8px; padding:11px 12px; outline:none; }
     input:focus, select:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(11,122,117,.12); }
     .form-actions { display:flex; justify-content:flex-start; margin-top:16px; }
-    .table-wrap { overflow:auto; }
+    .table-wrap { overflow-x:auto; max-width:100%; -webkit-overflow-scrolling:touch; }
     table { width:100%; border-collapse:collapse; min-width:800px; }
     th { background:#edf3f5; color:#516170; font-size:12px; padding:12px 14px; text-align:right; white-space:nowrap; }
     td { border-top:1px solid #edf0f3; padding:13px 14px; font-size:13px; white-space:nowrap; }
@@ -112,8 +112,8 @@
     .edit-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
     .toast { position:fixed; left:22px; bottom:22px; background:var(--ink); color:#fff; padding:12px 17px; border-radius:9px; opacity:0; transform:translateY(8px); pointer-events:none; transition:.2s; }
     .toast.show { opacity:1; transform:none; }
-    @media (max-width:900px) { .app { grid-template-columns:1fr; } aside { padding:16px; gap:15px; } nav { grid-template-columns:repeat(3,1fr); } .side-note { display:none; } main { padding:24px 15px; } .form-grid, .form-grid.sales { grid-template-columns:repeat(2,1fr); } }
-    @media (max-width:560px) { .topbar, .panel-head { align-items:stretch; flex-direction:column; } .stats, .customer-stats, .edit-grid { grid-template-columns:1fr; } nav { grid-template-columns:1fr 1fr; } .form-grid, .form-grid.sales { grid-template-columns:1fr; } .search-box { min-width:0; } h2 { font-size:25px; } }
+    @media (max-width:900px) { .app { grid-template-columns:1fr; } aside { padding:16px; gap:15px; } nav { grid-template-columns:repeat(3,1fr); } .side-note { display:none; } main { padding:24px 15px; } .form-grid, .form-grid.sales { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+    @media (max-width:560px) { body { overflow-x:hidden; } .topbar, .panel-head { align-items:stretch; flex-direction:column; } .stats, .customer-stats, .edit-grid { grid-template-columns:1fr; } nav { grid-template-columns:1fr 1fr; } .form-grid, .form-grid.sales { grid-template-columns:minmax(0,1fr); } .search-box { min-width:0; width:100%; } .top-actions { width:100%; } .top-actions .button { flex:1 1 auto; justify-content:center; min-width:0; } h2 { font-size:25px; } }
   </style>
 </head>
 <body>
@@ -140,7 +140,7 @@
           <div class="stat"><div class="stat-label">سجلات العملاء والمبيعات</div><div class="stat-value" id="sales-count">0</div></div>
           <div class="stat"><div class="stat-label">إجمالي المبيعات</div><div class="stat-value" id="sales-total">0</div></div>
         </div>
-        <div class="panel model-summary"><div class="panel-head"><div><h3 class="panel-title">ملخص الموديلات</h3><div class="panel-subtitle">الموجود في المخزن من المعروض، والخارج من كميات المبيعات.</div></div></div><div class="table-wrap"><table><thead><tr><th>الموديل</th><th>الموجود في المخزن</th><th>الخارج</th></tr></thead><tbody id="model-summary-body"></tbody></table></div></div>
+        <div class="panel model-summary"><div class="panel-head"><div><h3 class="panel-title">ملخص الموديلات</h3><div class="panel-subtitle">الموجود يتجدد تلقائيًا: المعروض ناقص الخارج لكل موديل.</div></div></div><div class="table-wrap"><table><thead><tr><th>الموديل</th><th>المعروض</th><th>الخارج</th><th>الموجود في المخزن</th></tr></thead><tbody id="model-summary-body"></tbody></table></div></div>
         <div class="panel"><div class="panel-head"><div><h3 class="panel-title">ابدأ من القائمة الجانبية</h3><div class="panel-subtitle">أدخل البيانات المطلوبة، ثم ابحث عن العميل من خانة البحث في سجل المبيعات.</div></div><button class="button primary" data-target="sales">فتح سجل العملاء <span>←</span></button></div></div>
       </section>
 
@@ -214,9 +214,10 @@
     const currentTime = () => new Date().toTimeString().slice(0, 5);
     document.querySelectorAll('input[type="date"]').forEach(input => input.value = today());
     document.querySelectorAll('input[type="time"]').forEach(input => input.value = currentTime());
-    const modelStockRemaining = (model, saleIndex) => { const stock = capitalRows.filter(row => row.customer === model).reduce((sum, row) => sum + Number(row.available || 0), 0); const outgoing = salesRows.slice(0, saleIndex + 1).filter(row => row.model === model).reduce((sum, row) => sum + Number(row.quantity || 0), 0); return stock - outgoing; };
+    const normalizeModel = value => String(value ?? '').trim().toLocaleLowerCase('ar');
+    const modelStockRemaining = (model, saleIndex) => { const normalizedModel = normalizeModel(model); const stock = capitalRows.filter(row => normalizeModel(row.customer) === normalizedModel).reduce((sum, row) => sum + Number(row.available || 0), 0); const outgoing = salesRows.slice(0, saleIndex + 1).filter(row => normalizeModel(row.model) === normalizedModel).reduce((sum, row) => sum + Number(row.quantity || 0), 0); return stock - outgoing; };
     const compressReceiptImage = file => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onerror = reject; reader.onload = () => { const image = new Image(); image.onerror = reject; image.onload = () => { const scale = Math.min(1, 1200 / image.width); const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale)); canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height); resolve({ data: canvas.toDataURL('image/jpeg', 0.72), type: 'image/jpeg' }); }; image.src = reader.result; }; reader.readAsDataURL(file); });
-    const modelInventory = (model, excludedSaleIndex = -1) => { const available = capitalRows.filter(row => row.customer === model).reduce((sum, row) => sum + Number(row.available || 0), 0); const sold = salesRows.reduce((sum, row, index) => index === excludedSaleIndex || row.model !== model ? sum : sum + Number(row.quantity || 0), 0); return { available, sold, remaining: available - sold }; };
+    const modelInventory = (model, excludedSaleIndex = -1) => { const normalizedModel = normalizeModel(model); const available = capitalRows.filter(row => normalizeModel(row.customer) === normalizedModel).reduce((sum, row) => sum + Number(row.available || 0), 0); const sold = salesRows.reduce((sum, row, index) => index === excludedSaleIndex || normalizeModel(row.model) !== normalizedModel ? sum : sum + Number(row.quantity || 0), 0); return { available, sold, remaining: available - sold }; };
     const validateInventory = (model, quantity, excludedSaleIndex = -1) => { const inventory = modelInventory(model, excludedSaleIndex); if (Number(quantity) > inventory.remaining) { alert(`الكمية المطلوبة تتجاوز المتاح في المخزن!\nالموديل: ${model}\nالمتاح: ${money(Math.max(0, inventory.remaining))}`); return false; } return true; };
     const validatePayment = (total, cash, electronic) => { if (Number(cash || 0) + Number(electronic || 0) > Number(total || 0)) { alert('إجمالي المدفوع لا يمكن أن يتجاوز إجمالي الفاتورة!'); return false; } return true; };
 
@@ -249,8 +250,8 @@
       document.getElementById('capital-count').textContent = capitalRows.length;
       document.getElementById('sales-count').textContent = salesRows.length;
       document.getElementById('sales-total').textContent = money(salesRows.reduce((sum, row) => sum + row.total, 0));
-      const models = [...new Set([...capitalRows.map(row => row.customer), ...salesRows.map(row => row.model)].filter(Boolean))].sort();
-      document.getElementById('model-summary-body').innerHTML = models.length ? models.map(model => { const inventory = modelInventory(model); const shortageClass = inventory.remaining < 0 ? ' class="inventory-shortage"' : ''; return `<tr${shortageClass} title="${inventory.remaining < 0 ? 'يوجد عجز في المخزون' : ''}"><td>${escapeHtml(model)}</td><td>${money(inventory.available)}</td><td>${money(inventory.sold)}</td></tr>`; }).join('') : '<tr><td class="empty" colspan="3">لا توجد موديلات بعد</td></tr>';
+      const models = [...new Map([...capitalRows.map(row => row.customer), ...salesRows.map(row => row.model)].filter(Boolean).map(model => [normalizeModel(model), model.trim()])).values()].sort((first, second) => first.localeCompare(second, 'ar'));
+      document.getElementById('model-summary-body').innerHTML = models.length ? models.map(model => { const inventory = modelInventory(model); const shortageClass = inventory.remaining < 0 ? ' class="inventory-shortage"' : ''; return `<tr${shortageClass} title="${inventory.remaining < 0 ? 'يوجد عجز في المخزون' : ''}"><td>${escapeHtml(model)}</td><td>${money(inventory.available)}</td><td>${money(inventory.sold)}</td><td><strong>${money(inventory.remaining)}</strong></td></tr>`; }).join('') : '<tr><td class="empty" colspan="4">لا توجد موديلات بعد</td></tr>';
       document.getElementById('capital-body').innerHTML = capitalRows.length ? capitalRows.map((row, index) => `<tr class="editable-row" data-edit-capital="${index}" title="اضغط لتعديل السجل"><td>${escapeHtml(row.date)}</td><td>${money(row.capital)}</td><td>${money(row.available)}</td><td>${escapeHtml(row.customer)}</td><td>${money(row.shipping)}</td><td><button class="delete" data-type="capital" data-index="${index}" title="حذف">×</button></td></tr>`).join('') : '<tr><td class="empty" colspan="6">لا توجد سجلات بعد</td></tr>';
       const query = document.getElementById('customer-search').value.trim().toLowerCase();
       const filtered = query ? salesRows.filter(row => row.customer.toLowerCase().includes(query)) : salesRows;
